@@ -4,16 +4,15 @@ import { tempMovieData, tempWatchedData } from "../data.js";
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
-export default function Main({movies}) {
+export default function Main({children}) {
   return (
     <main className="main">
-          <ListBox movies={movies} />
-      <WatchBox />
+          {children}
     </main>
   );
 }
 
-function ListBox({movies}) {
+export function ListBox({children}) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -23,12 +22,12 @@ function ListBox({movies}) {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-          {isOpen1 && <MovieList movies={movies}/>}
+          {isOpen1 && children}
     </div>
   );
 }
 
-function MovieList({movies}) {
+export function MovieList({movies}) {
   return (
     <ul className="list">
       {movies?.map((movie) => (
@@ -53,7 +52,7 @@ function Movie({ movie }) {
   );
 }
 
-function WatchBox() {
+export function WatchedBox() {
   const [isOpen2, setIsOpen2] = useState(true);
   const [watched, setWatched] = useState(tempWatchedData);
   return (
