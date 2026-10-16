@@ -10,9 +10,11 @@ import {
   WatchedMoviesList,
 } from "./components/Main";
 import Loader from "./components/Loader"
+import ErrorMessage from "./components/ErrorMessage";
 
 export default function App() {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [watched, setWatched] = useState([]);
   const [movies, setMovies] = useState([]);
 
@@ -30,12 +32,18 @@ export default function App() {
           `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${query}`,
         );
 
-        setMovies(res.data.Search ?? []);
-        console.log(res.data.Search);
+        setMovies(res.data.Search);
+
+        if (!res.ok) {
+          throw new Error("Something went wrong while fetching movies data!");
+        }
       } catch (error) {
-        console.log(`Erro fetching the movie: ${error.message}`);
+        console.log(`Erro fetching the movie`, error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
+      
     }
 
     fetchMovies();
@@ -49,7 +57,17 @@ export default function App() {
       </Navbar>
 
       <Main>
-        {loading ? <Loader /> : <Box element={<MovieList movies={movies} />} />}
+        <Box>
+          {/* {loading ? (
+            <Loader />
+          ) : (
+            <Box element={<MovieList movies={movies} />} />
+          )} */}
+
+          {loading && <Loader />}
+          {!loading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
+        </Box>
         <Box
           element={
             <>
