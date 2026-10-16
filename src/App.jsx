@@ -68,13 +68,17 @@ export default function App() {
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box
-          element={
-            <>
-              <WatchedSummary watched={watched} />
-              <WatchedMoviesList watched={watched} />
-            </>
-          }
-        />
+
+        // element={
+        //   <>
+        //     <WatchedSummary watched={watched} />
+        //     <WatchedMoviesList watched={watched} />
+        //   </>
+        // }
+        >
+          <WatchedSummary watched={watched} />
+          <WatchedMoviesList watched={watched} />
+        </Box>
         {/* <Box>
           <MovieList movies={movies} />
         </Box>
