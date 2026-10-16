@@ -26,20 +26,19 @@ export default function App() {
 
   useEffect(function () {
     async function fetchMovies() {
-      setLoading(true);
       try {
+        setLoading(true);
         const res = await axios.get(
           `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${query}`,
         );
 
-        setMovies(res.data.Search);
-
-        if (!res.ok) {
+        if (res.data.Response === "False") {
           throw new Error("Something went wrong while fetching movies data!");
         }
+
+        setMovies(res.data.Search ?? []);
       } catch (error) {
-        console.log(`Erro fetching the movie`, error);
-        setError(error.message);
+        setError(error.response?.data?.Error || error.message || "Something went wrong !");
       } finally {
         setLoading(false);
       }
