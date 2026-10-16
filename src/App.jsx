@@ -9,21 +9,36 @@ import {
   WatchedSummary,
   WatchedMoviesList,
 } from "./components/Main";
+import Loader from "./components/Loader"
 
 export default function App() {
+  const [loading, setLoading] = useState(false);
   const [watched, setWatched] = useState([]);
   const [movies, setMovies] = useState([]);
 
-  const movie = "the%20day%20of%20the%20jackal";
+  const query = "the%20day%20of%20the%20jackal";
 
   // fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${movie}`)
   //   .then((res) => res.json())
   //   .then((data) => console.log(data.Search));
 
   useEffect(function () {
-    axios.get(
-      `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${movie}`,
-    ).then(data => setMovies(data));
+    async function fetchMovies() {
+      setLoading(true);
+      try {
+        const res = await axios.get(
+          `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${query}`,
+        );
+
+        setMovies(res.data.Search ?? []);
+        console.log(res.data.Search);
+      } catch (error) {
+        console.log(`Erro fetching the movie: ${error.message}`);
+      }
+      setLoading(false);
+    }
+
+    fetchMovies();
   }, [])
 
   return (
@@ -34,7 +49,7 @@ export default function App() {
       </Navbar>
 
       <Main>
-        <Box element={<MovieList movies={movies} />} />
+        {loading ? <Loader /> : <Box element={<MovieList movies={movies} />} />}
         <Box
           element={
             <>
