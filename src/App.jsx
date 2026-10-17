@@ -13,6 +13,9 @@ import {
 import Loader from "./components/Loader"
 import ErrorMessage from "./components/ErrorMessage";
 
+const API_URL = import.meta.env.VITE_MOVIE_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -39,9 +42,7 @@ export default function App() {
       try {
         setLoading(true);
         setError("")
-        const res = await axios.get(
-          `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${query}`,
-        );
+        const res = await axios.get(`${API_URL}&apikey=${API_KEY}&s=${query}`);
 
         console.log("API response:", res.data.Search);
 

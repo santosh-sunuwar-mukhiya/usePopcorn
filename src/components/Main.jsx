@@ -1,6 +1,9 @@
 import { useState, useEffect } from "react";
 import StarRating from "./StarRating";
 
+const API_URL = import.meta.env.VITE_MOVIE_URL;
+const API_KEY = import.meta.env.VITE_API_KEY;
+
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
 
@@ -82,7 +85,7 @@ export function MovieDetails({ selectedId, onCloseMovie }) {
 
   useEffect(function () { 
     async function getMovieDetail() {
-      const res = await fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&i=${selectedId}`);
+      const res = await fetch(`${API_URL}&apikey=${API_KEY}&i=${selectedId}`);
       const data = await res.json();
       setMovie(data)
     }
