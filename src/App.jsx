@@ -17,8 +17,8 @@ export default function App() {
   const [error, setError] = useState("");
   const [watched, setWatched] = useState([]);
   const [movies, setMovies] = useState([]);
+  const [query, setQuery] = useState("");
 
-  const query = "the%20day%20of%20the%20jackal";
 
   // fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${movie}`)
   //   .then((res) => res.json())
@@ -28,6 +28,7 @@ export default function App() {
     async function fetchMovies() {
       try {
         setLoading(true);
+        setError("")
         const res = await axios.get(
           `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${query}`,
         );
@@ -46,12 +47,12 @@ export default function App() {
     }
 
     fetchMovies();
-  }, [])
+  }, [query])
 
   return (
     <>
       <Navbar>
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults movies={movies} />
       </Navbar>
 

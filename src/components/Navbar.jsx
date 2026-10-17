@@ -18,8 +18,7 @@ function Logo() {
     );
 }
 
-export function Search() {
-    const [query, setQuery] = useState("");
+export function Search({query, setQuery}) {
     return (
       <input
         className="search"
