@@ -40,7 +40,7 @@ export function Box({ children }) {
 
 export function MovieList({ movies, onSelectMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
         <Movie movie={movie} key={movie.imdbID} onSelectMovie={onSelectMovie} />
       ))}
@@ -63,8 +63,15 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-export function MovieDetails({ selectedId }) {
-  return <div className="details">{selectedId}</div>;
+export function MovieDetails({ selectedId, onCloseMovie }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+      {selectedId}
+    </div>
+  );
 }
 
 export function WatchedMoviesList({ watched }) {
