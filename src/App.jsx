@@ -6,6 +6,7 @@ import {Search, NumResults} from "./components/Navbar"
 import {
   Box,
   MovieList,
+  MovieDetails,
   WatchedSummary,
   WatchedMoviesList,
 } from "./components/Main";
@@ -17,12 +18,17 @@ export default function App() {
   const [error, setError] = useState("");
   const [watched, setWatched] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("the day of the jackal");
+  const [selectedId, setSelectedId] = useState(null);
 
 
   // fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${movie}`)
   //   .then((res) => res.json())
   //   .then((data) => console.log(data.Search));
+
+  function handleSelectMovie(id) {
+    setSelectedId(id);
+  }
 
   useEffect(function () {
     async function fetchMovies() {
@@ -33,17 +39,26 @@ export default function App() {
           `https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${query}`,
         );
 
+        console.log("API response:", res.data.Search);
+
         if (res.data.Response === "False") {
           throw new Error("Something went wrong while fetching movies data!");
         }
 
         setMovies(res.data.Search ?? []);
       } catch (error) {
+        console.error("Fetch failed:", error);
         setError(error.response?.data?.Error || error.message || "Something went wrong !");
       } finally {
         setLoading(false);
       }
       
+    }
+
+    if (query.length < 3) {
+      setMovies([]);
+      setError("");
+      return;
     }
 
     fetchMovies();
@@ -65,7 +80,9 @@ export default function App() {
           )} */}
 
           {loading && <Loader />}
-          {!loading && !error && <MovieList movies={movies} />}
+          {!loading && !error && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box
@@ -77,8 +94,14 @@ export default function App() {
         //   </>
         // }
         >
-          <WatchedSummary watched={watched} />
-          <WatchedMoviesList watched={watched} />
+          {selectedId ? (
+            <MovieDetails selectedId={selectedId} />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMoviesList watched={watched} />
+            </>
+          )}
         </Box>
         {/* <Box>
           <MovieList movies={movies} />
