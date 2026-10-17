@@ -68,7 +68,7 @@ function Movie({ movie, onSelectMovie }) {
   );
 }
 
-export function MovieDetails({ selectedId, onCloseMovie }) {
+export function MovieDetails({ selectedId, onCloseMovie, onAddWatched }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,19 +83,35 @@ export function MovieDetails({ selectedId, onCloseMovie }) {
     Actors: actors,
     Director: director,
     Genre: genre,
-   } = movie;
+  } = movie;
 
-  useEffect(function () { 
-    async function getMovieDetail() {
-      setIsLoading(true);
-      const res = await fetch(`${API_URL}&apikey=${API_KEY}&i=${selectedId}`);
-      const data = await res.json();
-      setMovie(data)
-      setIsLoading(false);
-    }
+  function handleAdd() {
+    const newWatchedMovie = {
+      imdbID: selectedId,
+      title,
+      year,
+      poster,
+      imdbRating: Number(imdbRating),
+      runtime: Number(runtime.split(" ").at(0)),
+    };
 
-    getMovieDetail();
-  }, [selectedId]);
+    onAddWatched(newWatchedMovie);
+  }
+
+  useEffect(
+    function () {
+      async function getMovieDetail() {
+        setIsLoading(true);
+        const res = await fetch(`${API_URL}&apikey=${API_KEY}&i=${selectedId}`);
+        const data = await res.json();
+        setMovie(data);
+        setIsLoading(false);
+      }
+
+      getMovieDetail();
+    },
+    [selectedId],
+  );
 
   return (
     <div className="details">
@@ -124,7 +140,15 @@ export function MovieDetails({ selectedId, onCloseMovie }) {
           <section>
             <div className="rating">
               <StarRating maxRating={10} size={24} />
+              <button className="btn-add" onClick={handleAdd}>
+                + Add to list
+              </button>
             </div>
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed by {director}</p>
           </section>
         </>
       )}
