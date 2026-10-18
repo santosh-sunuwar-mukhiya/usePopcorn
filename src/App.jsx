@@ -21,7 +21,7 @@ export default function App() {
   const [error, setError] = useState("");
   const [watched, setWatched] = useState([]);
   const [movies, setMovies] = useState([]);
-  const [query, setQuery] = useState("the day of the jackal");
+  const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
 
@@ -62,14 +62,17 @@ export default function App() {
         setMovies(res.data.Search ?? []);
         setError("")
       } catch (error) {
-        console.error("Fetch failed:", error);
-        if (error.name !== "AbortError") {
+        if(
+            axios.isCancel(error) ||
+            error.code === "ERR_CANCELED"
+        ) {
+          return;
+        }
           setError(
             error.response?.data?.Error ||
               error.message ||
               "Something went wrong !",
           );
-        }
       } finally {
         setLoading(false);
       }
