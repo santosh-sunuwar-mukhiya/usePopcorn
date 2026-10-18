@@ -126,6 +126,19 @@ export function MovieDetails({
     [selectedId],
   );
 
+  useEffect(
+    function () {
+      if (!title) return;
+      document.title = `Movie | ${title}`;
+
+      return function () {
+        document.title = "usePopcorn";
+        console.log(`Cleanup function for the movie title: ${title}`);
+      };
+    },
+    [title],
+  );
+
   return (
     <div className="details">
       {isLoading ? (
