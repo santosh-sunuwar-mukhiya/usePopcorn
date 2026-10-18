@@ -46,11 +46,12 @@ export default function App() {
   }
 
   useEffect(function () {
+    const controller = new AbortController();
     async function fetchMovies() {
       try {
         setLoading(true);
         setError("")
-        const res = await axios.get(`${API_URL}&apikey=${API_KEY}&s=${query}`);
+        const res = await axios.get(`${API_URL}&apikey=${API_KEY}&s=${query}`, { signal: controller.signal});
 
         console.log("API response:", res.data.Search);
 
@@ -59,9 +60,16 @@ export default function App() {
         }
 
         setMovies(res.data.Search ?? []);
+        setError("")
       } catch (error) {
         console.error("Fetch failed:", error);
-        setError(error.response?.data?.Error || error.message || "Something went wrong !");
+        if (error.name !== "AbortError") {
+          setError(
+            error.response?.data?.Error ||
+              error.message ||
+              "Something went wrong !",
+          );
+        }
       } finally {
         setLoading(false);
       }
@@ -75,6 +83,10 @@ export default function App() {
     }
 
     fetchMovies();
+
+    return function () {
+      controller.abort();
+    }
   }, [query])
 
   return (
