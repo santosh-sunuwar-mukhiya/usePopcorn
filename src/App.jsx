@@ -19,11 +19,16 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 export default function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [watched, setWatched] = useState([]);
   const [movies, setMovies] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
 
+  // const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(function () {
+    const storedValue = localStorage.getItem("watched");
+
+    return JSON.parse(storedValue);
+  });
 
   // fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${movie}`)
   //   .then((res) => res.json())
@@ -43,7 +48,7 @@ export default function App() {
   }
 
   function handleDeleteWatched(id) {
-    setWatched(watched => watched.filter((movie) => movie.imdbID !== id));
+    setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
 
   useEffect(
@@ -53,54 +58,56 @@ export default function App() {
     [watched],
   );
 
-  useEffect(function () {
-    const controller = new AbortController();
-    async function fetchMovies() {
-      try {
-        setLoading(true);
-        setError("")
-        const res = await axios.get(`${API_URL}&apikey=${API_KEY}&s=${query}`, { signal: controller.signal});
+  useEffect(
+    function () {
+      const controller = new AbortController();
+      async function fetchMovies() {
+        try {
+          setLoading(true);
+          setError("");
+          const res = await axios.get(
+            `${API_URL}&apikey=${API_KEY}&s=${query}`,
+            { signal: controller.signal },
+          );
 
-        console.log("API response:", res.data.Search);
+          console.log("API response:", res.data.Search);
 
-        if (res.data.Response === "False") {
-          throw new Error("Something went wrong while fetching movies data!");
-        }
+          if (res.data.Response === "False") {
+            throw new Error("Something went wrong while fetching movies data!");
+          }
 
-        setMovies(res.data.Search ?? []);
-        setError("")
-      } catch (error) {
-        if(
-            axios.isCancel(error) ||
-            error.code === "ERR_CANCELED"
-        ) {
-          return;
-        }
+          setMovies(res.data.Search ?? []);
+          setError("");
+        } catch (error) {
+          if (axios.isCancel(error) || error.code === "ERR_CANCELED") {
+            return;
+          }
           setError(
             error.response?.data?.Error ||
               error.message ||
               "Something went wrong !",
           );
-      } finally {
-        setLoading(false);
+        } finally {
+          setLoading(false);
+        }
       }
-      
-    }
 
-    if (query.length < 3) {
-      setMovies([]);
-      setError("");
-      return;
-    }
+      if (query.length < 3) {
+        setMovies([]);
+        setError("");
+        return;
+      }
 
-    handleCloseMovie()
+      handleCloseMovie();
 
-    fetchMovies();
+      fetchMovies();
 
-    return function () {
-      controller.abort();
-    }
-  }, [query])
+      return function () {
+        controller.abort();
+      };
+    },
+    [query],
+  );
 
   return (
     <>
