@@ -13,15 +13,15 @@ import {
 import Loader from "./components/Loader"
 import ErrorMessage from "./components/ErrorMessage";
 
+import { useMovies } from "./hooks/useMovies";
+
 const API_URL = import.meta.env.VITE_MOVIE_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 export default function App() {
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [movies, setMovies] = useState([]);
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
+  const { error, loading, movies } = useMovies(query, handleCloseMovie);
 
   // const [watched, setWatched] = useState([]);
   const [watched, setWatched] = useState(function () {
