@@ -14,6 +14,7 @@ import Loader from "./components/Loader"
 import ErrorMessage from "./components/ErrorMessage";
 
 import { useMovies } from "./hooks/useMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 const API_URL = import.meta.env.VITE_MOVIE_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -21,14 +22,15 @@ const API_KEY = import.meta.env.VITE_API_KEY;
 export default function App() {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState(null);
-  const { error, loading, movies } = useMovies(query, handleCloseMovie);
+  const { error, loading, movies } = useMovies(query);
 
-  // const [watched, setWatched] = useState([]);
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
+  // const [watched, setWatched] = useState(function () {
+  //   const storedValue = localStorage.getItem("watched");
 
-    return JSON.parse(storedValue);
-  });
+  //   return JSON.parse(storedValue);
+  // });
+
+  const [watched, setWatched] = useLocalStorageState([], "watched");
 
   // fetch(`https://www.omdbapi.com/?i=tt3896198&apikey=af2d2729&s=${movie}`)
   //   .then((res) => res.json())
@@ -50,14 +52,6 @@ export default function App() {
   function handleDeleteWatched(id) {
     setWatched((watched) => watched.filter((movie) => movie.imdbID !== id));
   }
-
-  useEffect(
-    function () {
-      localStorage.setItem("watched", JSON.stringify(watched));
-    },
-    [watched],
-  );
-
 
   return (
     <>
