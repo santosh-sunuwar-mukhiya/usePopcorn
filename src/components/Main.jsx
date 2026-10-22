@@ -2,6 +2,8 @@ import { useState, useEffect, useRef} from "react";
 import StarRating from "./StarRating";
 import Loader from "./Loader";
 
+import { useKey } from "../hooks/useKey";
+
 const API_URL = import.meta.env.VITE_MOVIE_URL;
 const API_KEY = import.meta.env.VITE_API_KEY;
 
@@ -120,19 +122,7 @@ export function MovieDetails({
     onCloseMovie();
   }
 
-  useEffect(function () {
-    function callback(e) {
-      if (e.code === "Escape") {
-        onCloseMovie();
-        console.log("Closing");
-      }
-    }
-    document.addEventListener("keydown", callback);
-
-    return function() {
-      document.removeEventListener("keydown", callback);
-    }
-  }, [onCloseMovie]);
+  useKey("Escape", onCloseMovie);
 
   useEffect(
     function () {
